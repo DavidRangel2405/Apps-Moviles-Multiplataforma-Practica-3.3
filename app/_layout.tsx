@@ -1,67 +1,72 @@
-import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
-import '@/global.css';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect, useState } from 'react';
-import { useColorScheme } from '@/components/useColorScheme';
-import { Slot, usePathname } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import { Fab, FabIcon } from '@/components/ui/fab';
-import { MoonIcon, SunIcon } from '@/components/ui/icon';
+import 'react-native-gesture-handler';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Drawer } from 'expo-router/drawer';
+import { GluestackUIProvider } from '@gluestack-ui/themed';
+import { config } from '@gluestack-ui/config';
+import { Icon, Pressable } from '@gluestack-ui/themed';
+import { Menu } from 'lucide-react-native';
+import { DrawerActions } from '@react-navigation/native';
+import { useNavigation } from 'expo-router';
 
-export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
-} from 'expo-router';
-
-SplashScreen.preventAutoHideAsync();
-
-export default function RootLayout() {
-  const [loaded, error] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-    ...FontAwesome.font,
-  });
-
-  const [styleLoaded, setStyleLoaded] = useState(false);
-  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
-  useEffect(() => {
-    if (error) throw error;
-  }, [error]);
-
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-  return <RootLayoutNav />;
+function DrawerToggleButton() {
+  const navigation = useNavigation();
+  
+  return (
+    <Pressable 
+      onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}
+      p="$2"
+      ml="$2"
+    >
+      <Icon as={Menu} color="#10b981" size="xl" />
+    </Pressable>
+  );
 }
 
-function RootLayoutNav() {
-  const pathname = usePathname();
-  const [colorMode, setColorMode] = useState<'light' | 'dark'>('light');
-
+export default function Layout() {
   return (
-    <GluestackUIProvider mode={colorMode}>
-      <ThemeProvider value={colorMode === 'dark' ? DarkTheme : DefaultTheme}>
-        <Slot />
-        {pathname === '/' && (
-          <Fab
-            onPress={() =>
-              setColorMode(colorMode === 'dark' ? 'light' : 'dark')
-            }
-            className="m-6"
-            size="lg"
-          >
-            <FabIcon as={colorMode === 'dark' ? MoonIcon : SunIcon} />
-          </Fab>
-        )}
-      </ThemeProvider>
-    </GluestackUIProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <GluestackUIProvider config={config}>
+        <Drawer
+          screenOptions={{
+            drawerStyle: {
+              backgroundColor: '#2d2d2d',
+              width: 280,
+            },
+            drawerActiveTintColor: '#10b981',
+            drawerInactiveTintColor: '#ffffff',
+            drawerLabelStyle: {
+              fontSize: 16,
+              fontWeight: '600',
+            },
+            headerStyle: {
+              backgroundColor: '#1a1a1a',
+              elevation: 0,
+              shadowOpacity: 0,
+            },
+            headerTintColor: '#ffffff',
+            headerTitleStyle: {
+              fontSize: 20,
+              fontWeight: 'bold',
+            },
+            headerLeft: () => <DrawerToggleButton />,
+          }}
+        >
+          <Drawer.Screen
+            name="index"
+            options={{
+              drawerLabel: 'Inicio',
+              title: 'David Rangel',
+            }}
+          />
+          <Drawer.Screen
+            name="FormsScreen"
+            options={{
+              drawerLabel: 'Forms',
+              title: 'David Rangel',
+            }}
+          />
+        </Drawer>
+      </GluestackUIProvider>
+    </GestureHandlerRootView>
   );
 }
