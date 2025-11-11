@@ -72,6 +72,13 @@ export default function Layout() {
               title: 'David Rangel',
             }}
           />
+          <Drawer.Screen
+            name="DisplayScreen"
+            options={{
+              drawerLabel: 'Display',
+              title: 'David Rangel',
+            }}
+          />
         </Drawer>
       </GluestackUIProvider>
     </GestureHandlerRootView>
