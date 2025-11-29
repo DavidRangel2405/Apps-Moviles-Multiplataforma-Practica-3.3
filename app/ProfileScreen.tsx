@@ -37,7 +37,7 @@ import {
   EyeOff,
   Star,
 } from 'lucide-react-native';
-import StatsCard from '../components/StatsCard';
+import StatsCard from '../components/statsCard';
 
 const { width } = Dimensions.get('window');
 
@@ -78,7 +78,7 @@ export default function ProfileScreen() {
     }));
   };
 
-  // 📸 Nueva función: abrir cámara o galería
+  // Nueva función: abrir cámara o galería
   const handleAvatarChange = async (useCamera = false) => {
     try {
       const permission = useCamera

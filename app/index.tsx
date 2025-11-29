@@ -1,61 +1,41 @@
-import React from 'react';
-import { ScrollView } from 'react-native';
-import { Box, Text, VStack } from '@gluestack-ui/themed';
-import AnimatedBanner from '../components/AnimatedBanner';
+import { useEffect } from 'react';
+import { useRouter } from 'expo-router';
+import { useAuth } from '../auth/authProvider';
+import { View, ActivityIndicator } from 'react-native';
+import 'react-native-get-random-values';
+import bcrypt from 'react-native-bcrypt';
 
-export default function index() {
+// Fix PRNG
+bcrypt.setRandomFallback((len: number) => {
+  const bytes = new Uint8Array(len);
+  globalThis.crypto.getRandomValues(bytes);
+  return Array.from(bytes);
+});
+
+export default function Index() {
+  const router = useRouter();
+  const { user, loading } = useAuth();
+
+  useEffect(() => {
+    if (loading) return;
+
+    // Redirigir según el estado de autenticación
+    if (!user) {
+      router.replace('/loginScreen');
+    } else {
+      router.replace('/homeScreen');
+    }
+  }, [user, loading]);
+
+  // Mostrar spinner mientras se verifica la autenticación
   return (
-    <Box flex={1} bg="#1a1a1a">
-      <ScrollView>
-        <VStack space="xl" p="$4">
-          {/* Banner animado personalizado */}
-          <AnimatedBanner />
-          
-          <Box 
-            bg="#2d2d2d" 
-            p="$6" 
-            borderRadius="$xl"
-            borderWidth={1}
-            borderColor="#10b981"
-          >
-            <Text color="white" fontSize="$2xl" fontWeight="$bold" mb="$4">
-              Bienvenido
-            </Text>
-            <Text color="#d1d5db" fontSize="$md" lineHeight="$xl">
-              Esta aplicación demuestra el uso de componentes Gluestack UI v3 
-              con formularios interactivos, navegación drawer y un diseño moderno 
-              y responsive.
-            </Text>
-          </Box>
-
-          <Box 
-            bg="#2d2d2d" 
-            p="$6" 
-            borderRadius="$xl"
-          >
-            <Text color="#10b981" fontSize="$xl" fontWeight="$bold" mb="$3">
-              Características
-            </Text>
-            <VStack space="md">
-              <Text color="#d1d5db" fontSize="$sm">
-                ✓ Menú Drawer con navegación
-              </Text>
-              <Text color="#d1d5db" fontSize="$sm">
-                ✓ Formularios completos con validación
-              </Text>
-              <Text color="#d1d5db" fontSize="$sm">
-                ✓ Componente animado personalizado
-              </Text>
-              <Text color="#d1d5db" fontSize="$sm">
-                ✓ Diseño responsive y moderno
-              </Text>
-              <Text color="#d1d5db" fontSize="$sm">
-                ✓ Paleta de colores profesional
-              </Text>
-            </VStack>
-          </Box>
-        </VStack>
-      </ScrollView>
-    </Box>
+    <View style={{ 
+      flex: 1, 
+      justifyContent: 'center', 
+      alignItems: 'center', 
+      backgroundColor: '#0A0A0A' 
+    }}>
+      <ActivityIndicator size="large" color="#10b981" />
+    </View>
   );
 }
